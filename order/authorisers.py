@@ -10,8 +10,9 @@ class FailedToAuthoriseError(Exception):
 
 
 class Authoriser(ABC):
-    _authorised: bool = False
-    _name: str = ""
+    def __init__(self):
+        self._authorised = False
+        self._name = ""
 
     @property
     def name(self):
@@ -38,6 +39,7 @@ class SMSAuth(Authoriser):
     _name = "SMS authoriser"
 
     def __init__(self, code):
+        super().__init__()
         self._code = code
 
     def verify(self) -> None:
@@ -67,6 +69,7 @@ class EmailAuth(Authoriser):
     _name = "Email authoriser"
 
     def __init__(self, email):
+        super().__init__()
         self._email = email
 
     def verify(self):
@@ -83,6 +86,7 @@ class BitcoinAuth(Authoriser):
     _name = "Bitcoin authoriser"
 
     def __init__(self, wallet_id):
+        super().__init__()
         self._wallet_id = wallet_id
 
     def verify(self) -> None:

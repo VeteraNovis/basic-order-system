@@ -5,16 +5,21 @@ from order.order import Order
 
 
 class PaymentProcessor(ABC):
-    processor_name: str = ""
-    _authorisers: list[Authoriser] = []
+    _name: str = ""
+    _authorisers: list[Authoriser] = None
 
-    def __init__(self, authorisers: list[Authoriser]):
+    def __init__(self, authorisers: list[Authoriser] = None):
+        self._authorisers = []
         for authoriser in authorisers:
             self._authorisers.append(authoriser)
 
     def verify_payment(self) -> None:
         for auth in self._authorisers:
             auth.verify()
+
+    @property
+    def name(self):
+        return self._name
 
     @abstractmethod
     def pay(self, order: Order) -> None:
@@ -24,10 +29,10 @@ class PaymentProcessor(ABC):
 class DebitPaymentProcessor(PaymentProcessor):
     """Class responsibility: Pay for an order"""
 
-    processor_name = "Debit"
+    _name = "Debit"
 
     def pay(self, order: Order) -> None:
-        print(f"Processing {self.processor_name} payment type")
+        print(f"Processing {self.name} payment type")
 
         for authoriser in self._authorisers:
             if not authoriser.is_authorised():
@@ -40,10 +45,10 @@ class DebitPaymentProcessor(PaymentProcessor):
 class CreditPaymentProcessor(PaymentProcessor):
     """Class responsibility: Pay for an order"""
 
-    processor_name = "Credit"
+    _name = "Credit"
 
     def pay(self, order: Order) -> None:
-        print(f"Processing {self.processor_name} payment type")
+        print(f"Processing {self.name} payment type")
 
         for authoriser in self._authorisers:
             if not authoriser.is_authorised():
@@ -56,10 +61,10 @@ class CreditPaymentProcessor(PaymentProcessor):
 class PaypalPaymentProcessor(PaymentProcessor):
     """Class responsibility: Pay for an order"""
 
-    processor_name = "Paypal"
+    _name = "Paypal"
 
     def pay(self, order: Order) -> None:
-        print(f"Processing {self.processor_name} payment type")
+        print(f"Processing {self.name} payment type")
 
         for authoriser in self._authorisers:
             if not authoriser.is_authorised():
@@ -72,10 +77,10 @@ class PaypalPaymentProcessor(PaymentProcessor):
 class BitcoinPaymentProcessor(PaymentProcessor):
     """Class responsibility: Pay for an order"""
 
-    processor_name = "Bitcoin"
+    _name = "Bitcoin"
 
     def pay(self, order: Order) -> None:
-        print(f"Processing {self.processor_name} payment type")
+        print(f"Processing {self.name} payment type")
 
         for authoriser in self._authorisers:
             if not authoriser.is_authorised():

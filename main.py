@@ -48,26 +48,40 @@ def main():
     run_unittest(test_path, test_pattern)
 
     # Create new order
-    order = Order()
+    order_debit = Order()
+    order_credit = Order()
+    order_paypal = Order()
+    order_bitcoin = Order()
 
-    # Add items to the order
-    order.add_item("keyboard", 1, 15)
-    order.add_item("mouse", 1, 5)
-    order.add_item("monitor", 2, 30)
+    # Add items to each order
+    order_debit.add_item("keyboard", 1, 15)
+    order_credit.add_item("mouse", 1, 5)
+    order_paypal.add_item("monitor", 2, 30)
+    order_bitcoin.add_item("cables", 5, 1)
+
+    orders = [order_debit, order_credit, order_paypal, order_bitcoin]
 
     # Setup processor for desired payment type & authentication
-    processor = pay_with_bitcoin()
+    processors = [
+        pay_with_debit(),
+        pay_with_credit(),
+        pay_with_paypal(),
+        pay_with_bitcoin(),
+    ]
 
     # Verify successful authentication
-    processor.verify_payment()
+    for order, processor in zip(orders, processors):
+        processor.verify_payment()
 
-    # Attempt to pay for the for order
-    try:
-        processor.pay(order)
-    except FailedToAuthoriseError as e:
-        print(f"Error: {e}")
-    else:
-        print(f"Order status: {order.status}")
+        # Attempt to pay for each order
+        try:
+            processor.pay(order)
+        except FailedToAuthoriseError as e:
+            print(f"Error: {e}")
+        else:
+            print(f"Order status: {order.status}")
+
+        print("   ")
 
 
 if __name__ == "__main__":
